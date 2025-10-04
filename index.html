@@ -69,12 +69,22 @@
             <p class="text-gray-400 mt-2">Your daily guide to strength and form.</p>
         </header>
 
-        <!-- Plan Switch -->
-        <div class="flex justify-center">
+        <!-- Controls -->
+        <div class="flex flex-col items-center gap-4 mb-4">
+            <!-- Plan Switch -->
             <div id="plan-switch" class="plan-switch-container">
                 <div class="plan-switch-slider"></div>
                 <div id="plan-a-btn" class="plan-switch-button text-white">Plan A</div>
                 <div id="plan-b-btn" class="plan-switch-button text-gray-300">Plan B</div>
+            </div>
+            <!-- GIF Toggle -->
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-gray-400">Hide GIFs</span>
+                <label for="gif-toggle" class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="gif-toggle" class="sr-only peer" checked>
+                    <div class="w-11 h-6 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+                <span class="text-sm font-medium text-gray-400">Show GIFs</span>
             </div>
         </div>
 
@@ -153,6 +163,7 @@
             // --- STATE ---
             let currentPlan = 'A';
             let activeDay = 1;
+            let showGifs = true;
 
             // --- DOM Elements ---
             const workoutContent = document.getElementById('workout-content');
@@ -163,6 +174,7 @@
             const planSwitchSlider = document.querySelector('.plan-switch-slider');
             const planABtn = document.getElementById('plan-a-btn');
             const planBBtn = document.getElementById('plan-b-btn');
+            const gifToggle = document.getElementById('gif-toggle');
 
             // --- FUNCTIONS ---
             const renderDay = (dayNumber, planId) => {
@@ -214,16 +226,27 @@
             const createExerciseCard = (exercise) => {
                 const card = document.createElement('div');
                 card.className = 'bg-gray-700/50 p-4 rounded-lg shadow-lg flex flex-col md:flex-row gap-4 items-center';
-                card.innerHTML = `
-                    <div class="flex-1 w-full">
+
+                const textClasses = ['flex-1', 'w-full'];
+                if (!showGifs) {
+                    textClasses.push('text-center');
+                }
+
+                const textContent = `
+                    <div class="${textClasses.join(' ')}">
                         <h4 class="text-lg font-bold text-white">${exercise.name}</h4>
                         <p class="text-blue-300 font-medium">${exercise.sets} sets of ${exercise.reps} reps</p>
                         <p class="text-gray-400 text-sm mt-2">${exercise.cues}</p>
                     </div>
+                `;
+
+                const gifContent = `
                     <div class="flex-shrink-0 w-48 h-48 md:w-40 md:h-40 bg-gray-800 rounded-md overflow-hidden">
                         <img src="${exercise.gif}" alt="${exercise.name} form" class="w-full h-full object-cover">
                     </div>
                 `;
+
+                card.innerHTML = showGifs ? textContent + gifContent : textContent;
                 return card;
             };
 
@@ -275,6 +298,12 @@
             // Plan Switch listeners
             planABtn.addEventListener('click', () => setPlan('A'));
             planBBtn.addEventListener('click', () => setPlan('B'));
+
+            // GIF Toggle listener
+            gifToggle.addEventListener('change', () => {
+                showGifs = gifToggle.checked;
+                renderDay(activeDay, currentPlan);
+            });
 
             // Modal event listeners
             guidelinesBtn.addEventListener('click', () => modal.classList.remove('hidden'));
