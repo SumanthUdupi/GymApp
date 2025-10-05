@@ -69,12 +69,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const createExerciseCard = (exercise) => {
         const card = document.createElement('div');
-        card.className = 'bg-gray-700/50 p-4 rounded-lg shadow-lg';
+        card.className = 'exercise-card';
 
         card.innerHTML = `
             <h4 class="text-lg font-bold text-white">${exercise.name}</h4>
             <p class="text-blue-300 font-medium">${exercise.sets} sets of ${exercise.reps} reps</p>
-            <div class="text-gray-400 text-sm mt-2 space-y-2">${exercise.cues}</div>
+            <div class="text-gray-400 text-sm mt-2">${exercise.cues}</div>
         `;
         return card;
     };
@@ -106,11 +106,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- INITIALIZATION & EVENT LISTENERS ---
     navContainer.innerHTML = '';
+    const dayShortNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const dayIcons = {
+        1: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg>`,
+        2: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg>`,
+        3: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg>`,
+        4: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg>`,
+        5: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg>`,
+        6: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg>`,
+        7: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>`
+    };
+
     for (let i = 1; i <= 7; i++) {
         const button = document.createElement('button');
-        button.textContent = `Day ${i}`;
         button.dataset.day = i;
-        button.className = 'px-4 py-2 bg-gray-700 rounded-md hover:bg-blue-600 transition-colors duration-200 font-medium';
+        button.className = 'day-nav-button group';
+
+        const dayText = (i === 7) ? "Rest Day" : `Day ${i}`;
+        const shortName = (i === 7) ? "Rest" : dayShortNames[i-1];
+
+        button.innerHTML = `
+            ${dayIcons[i]}
+            <span class="text-sm font-semibold">${shortName}</span>
+            <span class="text-xs text-gray-400 group-hover:text-gray-300">${dayText}</span>
+        `;
+
         button.addEventListener('click', () => {
             renderDay(i, currentPlan);
             updateActiveButton(i);
