@@ -69,13 +69,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const createExerciseCard = (exercise) => {
         const card = document.createElement('div');
-        card.className = 'exercise-card';
+        card.className = 'exercise-card'; // Add 'open' class by default if you want them open initially
 
-        card.innerHTML = `
-            <h4 class="text-lg font-bold text-white">${exercise.name}</h4>
-            <p class="text-blue-300 font-medium">${exercise.sets} sets of ${exercise.reps} reps</p>
-            <div class="text-gray-400 text-sm mt-2">${exercise.cues}</div>
+        const header = document.createElement('div');
+        header.className = 'exercise-card-header';
+        header.innerHTML = `
+            <div>
+                <h4 class="text-lg font-bold text-white">${exercise.name}</h4>
+                <p class="text-blue-300 font-medium">${exercise.sets} sets of ${exercise.reps} reps</p>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
         `;
+
+        const content = document.createElement('div');
+        content.className = 'exercise-card-content';
+        content.innerHTML = `<div class="text-gray-400 text-sm mt-4 pt-4 border-t border-gray-700">${exercise.cues}</div>`;
+
+        card.appendChild(header);
+        card.appendChild(content);
+
+        header.addEventListener('click', () => {
+            card.classList.toggle('open');
+        });
+
         return card;
     };
 
