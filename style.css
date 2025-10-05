@@ -89,21 +89,43 @@ main#workout-content {
 }
 
 .exercise-card {
-    background-color: rgba(31, 41, 55, 0.5); /* gray-800/50 */
+    background-color: rgba(31, 41, 55, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 0.75rem; /* 12px */
-    padding: 1.25rem; /* 20px */
+    border-radius: 0.75rem;
+    padding: 1rem; /* Adjusted padding */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden; /* Important for containing the animated content */
+}
+
+.exercise-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.exercise-card-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.exercise-card.open .exercise-card-content {
+    max-height: 500px; /* Adjust as needed, should be larger than any content */
+}
+
+.exercise-card.open svg {
+    transform: rotate(180deg);
 }
 
 .exercise-card h4 {
-    font-size: 1.125rem; /* text-lg */
+    font-size: 1.125rem;
     margin-bottom: 0.25rem;
 }
 
 .exercise-card p {
-    font-size: 0.875rem; /* text-sm */
-    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    margin-bottom: 0; /* Remove margin from p in header */
 }
 
 .exercise-card ul {
