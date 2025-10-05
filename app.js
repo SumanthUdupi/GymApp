@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- STATE ---
     let currentPlan = localStorage.getItem('workoutPlan') || 'A';
     let activeDay = parseInt(localStorage.getItem('activeDay')) || 1;
-    let showGifs = localStorage.getItem('showGifs') === 'false' ? false : true;
 
     // --- DOM Elements ---
     const workoutContent = document.getElementById('workout-content');
@@ -14,42 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const planSwitchSlider = document.querySelector('.plan-switch-slider');
     const planABtn = document.getElementById('plan-a-btn');
     const planBBtn = document.getElementById('plan-b-btn');
-    const gifToggle = document.getElementById('gif-toggle');
-    const libraryBtn = document.getElementById('library-btn');
-    const libraryModal = document.getElementById('library-modal');
-    const closeLibraryBtn = document.getElementById('close-library-btn');
-    const libraryContent = document.getElementById('library-content');
 
     // --- FUNCTIONS ---
-    const populateExerciseLibrary = () => {
-        const allExercises = new Map();
-
-        // Collect all unique exercises
-        Object.values(allWorkoutPlans).forEach(plan => {
-            Object.values(plan).forEach(day => {
-                if (day.exercises) {
-                    day.exercises.forEach(exercise => {
-                        if (!allExercises.has(exercise.name)) {
-                            allExercises.set(exercise.name, exercise);
-                        }
-                    });
-                }
-            });
-        });
-
-        // Sort exercises alphabetically
-        const sortedExercises = Array.from(allExercises.values()).sort((a, b) => a.name.localeCompare(b.name));
-
-        // Create and append exercise cards
-        libraryContent.innerHTML = sortedExercises.map(exercise => `
-            <div class="bg-gray-700 p-4 rounded-lg shadow-lg flex flex-col items-center text-center">
-                <h4 class="text-md font-bold text-white mb-2">${exercise.name}</h4>
-                <div class="w-full h-40 bg-gray-800 rounded-md overflow-hidden">
-                    <img src="${exercise.gif}" alt="${exercise.name} form" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML = \`<div class='w-full h-full flex items-center justify-center bg-gray-800 text-gray-500 text-sm'>GIF not available</div>\`;">
-                </div>
-            </div>
-        `).join('');
-    };
     const renderDay = (dayNumber, planId) => {
         const dayData = allWorkoutPlans[planId][dayNumber];
         if (!dayData) return;
@@ -99,28 +64,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const createExerciseCard = (exercise) => {
         const card = document.createElement('div');
-        card.className = 'bg-gray-700/50 p-4 rounded-lg shadow-lg flex flex-col md:flex-row gap-4 items-center';
+        card.className = 'bg-gray-700/50 p-4 rounded-lg shadow-lg';
 
-        const textClasses = ['flex-1', 'w-full'];
-        if (!showGifs) {
-            textClasses.push('text-center');
-        }
-
-        const textContent = `
-            <div class="${textClasses.join(' ')}">
-                <h4 class="text-lg font-bold text-white">${exercise.name}</h4>
-                <p class="text-blue-300 font-medium">${exercise.sets} sets of ${exercise.reps} reps</p>
-                <p class="text-gray-400 text-sm mt-2">${exercise.cues}</p>
-            </div>
+        card.innerHTML = `
+            <h4 class="text-lg font-bold text-white">${exercise.name}</h4>
+            <p class="text-blue-300 font-medium">${exercise.sets} sets of ${exercise.reps} reps</p>
+            <div class="text-gray-400 text-sm mt-2 space-y-2">${exercise.cues}</div>
         `;
-
-        const gifContent = `
-            <div class="flex-shrink-0 w-48 h-48 md:w-40 md:h-40 bg-gray-800 rounded-md overflow-hidden">
-                <img src="${exercise.gif}" alt="${exercise.name} form" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML = \`<div class='w-full h-full flex items-center justify-center bg-gray-800 text-gray-500 text-sm'>GIF not available</div>\`;">
-            </div>
-        `;
-
-        card.innerHTML = showGifs ? textContent + gifContent : textContent;
         return card;
     };
 
@@ -172,19 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('activeDay', activeDay);
     }
 
-    gifToggle.checked = showGifs;
     setPlan(currentPlan); // This will set the plan and render the day
 
     // Plan Switch listeners
     planABtn.addEventListener('click', () => setPlan('A'));
     planBBtn.addEventListener('click', () => setPlan('B'));
-
-    // GIF Toggle listener
-    gifToggle.addEventListener('change', () => {
-        showGifs = gifToggle.checked;
-        localStorage.setItem('showGifs', showGifs);
-        renderDay(activeDay, currentPlan);
-    });
 
     // Modal event listeners
     guidelinesBtn.addEventListener('click', () => modal.classList.remove('hidden'));
@@ -192,15 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.classList.add('hidden');
     });
-
-    // Library modal event listeners
-    libraryBtn.addEventListener('click', () => libraryModal.classList.remove('hidden'));
-    closeLibraryBtn.addEventListener('click', () => libraryModal.classList.add('hidden'));
-    libraryModal.addEventListener('click', (e) => {
-        if (e.target === libraryModal) libraryModal.classList.add('hidden');
-    });
-
-    populateExerciseLibrary();
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
