@@ -19,40 +19,45 @@ document.addEventListener('DOMContentLoaded', () => {
         const dayData = allWorkoutPlans[planId][dayNumber];
         if (!dayData) return;
         activeDay = dayNumber;
-                localStorage.setItem('activeDay', activeDay);
+        localStorage.setItem('activeDay', activeDay);
 
-        workoutContent.innerHTML = '';
+        workoutContent.style.opacity = 0;
 
-        const titleEl = document.createElement('h2');
-        titleEl.className = 'text-2xl md:text-3xl font-bold text-center text-blue-400 mb-6';
-        titleEl.textContent = `Day ${dayNumber}: ${dayData.title}`;
-        workoutContent.appendChild(titleEl);
+        setTimeout(() => {
+            workoutContent.innerHTML = '';
 
-        if (dayNumber === 7) {
-            const restEl = document.createElement('div');
-            restEl.className = 'text-center p-8';
-            restEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-green-400 mb-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg><p class="text-lg text-gray-300">${dayData.cooldown}</p>`;
-            workoutContent.appendChild(restEl);
-            return;
-        }
+            const titleEl = document.createElement('h2');
+            titleEl.className = 'text-2xl md:text-3xl font-bold text-center text-blue-400 mb-6';
+            titleEl.textContent = `Day ${dayNumber}: ${dayData.title}`;
+            workoutContent.appendChild(titleEl);
 
-        const warmupEl = createSection('Warm-up', dayData.warmup);
-        workoutContent.appendChild(warmupEl);
+            if (dayNumber === 7) {
+                const restEl = document.createElement('div');
+                restEl.className = 'text-center p-8';
+                restEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-green-400 mb-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg><p class="text-lg text-gray-300">${dayData.cooldown}</p>`;
+                workoutContent.appendChild(restEl);
+            } else {
+                const warmupEl = createSection('Warm-up', dayData.warmup);
+                workoutContent.appendChild(warmupEl);
 
-        const trainingTitle = document.createElement('h3');
-        trainingTitle.className = 'text-xl font-semibold text-white mt-8 mb-4 border-b-2 border-gray-700 pb-2';
-        trainingTitle.textContent = 'Main Training';
-        workoutContent.appendChild(trainingTitle);
+                const trainingTitle = document.createElement('h3');
+                trainingTitle.className = 'text-xl font-semibold text-white mt-8 mb-4 border-b-2 border-gray-700 pb-2';
+                trainingTitle.textContent = 'Main Training';
+                workoutContent.appendChild(trainingTitle);
 
-        const exercisesContainer = document.createElement('div');
-        exercisesContainer.className = 'space-y-4';
-        dayData.exercises.forEach(ex => {
-            exercisesContainer.appendChild(createExerciseCard(ex));
-        });
-        workoutContent.appendChild(exercisesContainer);
+                const exercisesContainer = document.createElement('div');
+                exercisesContainer.className = 'space-y-4';
+                dayData.exercises.forEach(ex => {
+                    exercisesContainer.appendChild(createExerciseCard(ex));
+                });
+                workoutContent.appendChild(exercisesContainer);
 
-        const cooldownEl = createSection('Cool-down', dayData.cooldown, 'mt-8');
-        workoutContent.appendChild(cooldownEl);
+                const cooldownEl = createSection('Cool-down', dayData.cooldown, 'mt-8');
+                workoutContent.appendChild(cooldownEl);
+            }
+
+            workoutContent.style.opacity = 1;
+        }, 150);
     };
 
     const createSection = (title, content, margin = '') => {
@@ -133,6 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
     closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
     modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.classList.add('hidden');
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+            modal.classList.add('hidden');
+        }
     });
 
     if ('serviceWorker' in navigator) {
